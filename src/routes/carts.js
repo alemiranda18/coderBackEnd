@@ -1,5 +1,6 @@
 import { Router } from "express";
 import cartModel from "../../models/cartsModel";
+import productModel from "../../models/ProductsModel";
 
 const Carts = Router()
 
@@ -61,7 +62,7 @@ Carts.get('/:id', async (req, res) => {
 Carts.post('/:cid/products/:pid', async (req, res) => {
     try {
         const { cid, pid } = req.params
-        const { productId, cantidad } = req.body
+        const { cantidad } = req.body
         const carrito = await cartModel.findById(cid)
         if (!carrito) {
             res.status(400).json({ message: 'producto no encontrado' })
@@ -83,4 +84,31 @@ Carts.post('/:cid/products/:pid', async (req, res) => {
 
     }
 })
+
+// delete para eliminar el producto del carrito 
+Carts.delete('/:cid/products/:pid', async (req, res) => {
+    try {
+        const { cid, pid } = req.params
+        const carrito = await cartModel.findById(cid)
+
+        if (!carrito) {
+            return res.status(404).json({ message: 'Carrito no encontrado' })
+        }
+        const prodCarrito = carrito.productos.length;
+        carrito.productos = carrito.productos.filter(
+            p => p.productId.toString() !== pid
+        )
+        if (carrito.productos.length == prodCarrito) {
+            res.status(404).json({ message: "producto no encontrado" })
+        }
+        await carrito.save()
+        res.status(200).json({ message: 'Producto eliminado del carrito', carrito });
+    }
+
+    catch {
+        res.status(400).json({ message: 'producto no encontrado', error })
+
+    }
+})
+
 export default Carts 
