@@ -104,7 +104,9 @@ Products.delete('/:id', async (req, res) => {
         if (productosEliminados.deletedCount > 0) {
             res.status(200).json({ message: 'producto eliminado' })
         }
-        else { res.status(400).json({ message: 'producto no encontrado' }) }
+        else {
+            res.status(400).json({ message: 'producto no encontrado' })
+        }
     }
     catch (error) {
         res.status(400).json({ message: 'producto no encontrado', error })

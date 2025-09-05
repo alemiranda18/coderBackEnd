@@ -1,12 +1,9 @@
 import { Router } from "express";
 import cartModel from "../../models/cartsModel";
-import productModel from "../../models/ProductsModel";
 
 const Carts = Router()
 
-// generar el carrito
-const carritos = [];
-
+//post para generar el carrito
 Carts.post('/', async (req, res) => {
     try {
         const { productos } = req.body
@@ -42,7 +39,6 @@ Carts.get('/', async (req, res) => {
 })
 
 //get para ver los carritos por Id
-
 Carts.get('/:id', async (req, res) => {
     try {
         const { id } = req.params
@@ -108,6 +104,65 @@ Carts.delete('/:cid/products/:pid', async (req, res) => {
     catch {
         res.status(400).json({ message: 'producto no encontrado', error })
 
+    }
+})
+
+//eliminar todos los productos del carrito 
+Carts.delete('/:cid', async (req, res) => {
+    try {
+        const { cid } = req.params
+        const carrito = await cartModel.findById(cid)
+        if (!carrito) {
+            return res.status(400).json({ message: "carrito no encontrado" })
+        }
+        carrito.productos = []
+        await carrito.save()
+        res.status(200).json({ message: "Todos los productos eliminados del carrito", carrito })
+    }
+    catch (error) {
+        res.status(400).json({ message: 'producto no encontrado', error })
+    }
+
+})
+
+//put para actualizar los productos del carrito con un array de productos
+Carts.put('/:cid', async (req, res) => {
+    try {
+        const { cid } = req.params
+        const { productos } = req.body
+        const carrito = await cartModel.findById(cid)
+        if (!carrito) {
+            return res.status(404).json({ message: 'carrito no encontrado' })
+        }
+
+        carrito.productos = productos
+        await carrito.save()
+        res.status(200).json({ message: 'Productos del carrito actualizados', carrito });
+    }
+    catch (error) {
+        res.status(500).json({ message: 'producto no encontrado', error })
+    }
+})
+
+//put que actualiza la cantidad de ejemplares pasado por req.body
+Carts.put('/:cid/products/:pid', async (req, res) => {
+    try {
+        const { cid, pid } = req.params
+        const { cantidad } = req.body
+        const carrito = await cartModel.findById(cid)
+        if (!carrito) {
+            return res.status(404).json({ message: "producto no encontrado" })
+        }
+        const producto = carrito.productos.find(p => p.productId.toString() === pid)
+        if (!producto) {
+            return res.status(404).json({ message: 'producto no encontrado' })
+        }
+        producto.cantidad = cantidad
+        await carrito.save()
+        res.status(200).json({ message: 'Cantidad actualizada', carrito });
+    }
+    catch (error) {
+        res.status(500).json({ message: 'Error al actualizar cantidad', error })
     }
 })
 
