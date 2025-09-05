@@ -1,36 +1,29 @@
 import { Router } from "express";
-import productModel from "../../models/ProductsModel.js";
+import productModel from "../models/ProductsModel.js";
 
 const Products = Router()
-const generarID = (() => { let id = 0; return () => ++id; })();
-const productos = []
 
 
 //get que muestra los productos que tengo 
 Products.get('/', async (req, res) => {
     try {
-        const product = await productModel.find();
         let { limit = 10, page = 1, query } = req.query
-        limit = parseInt(limit, 10)
-        page = parseInt(page, 10)
-        const filter = query ? { name: { $regex: query, $options: "i" } } : {};
-
-        const options = {
-            limit,
-            page
-        }
-
+        limit = parseInt(limit)
+        page = parseInt(page)
+        const filter = query ? { nombre: { $regex: query, $options: "i" } } : {};
+        const options = { limit, page }
         const resultado = await productModel.paginate(filter, options)
 
-        res.json({
-            status: "success",
-            payload: resultado.docs,
+        res.render('index', {
+            products: resultado.docs,
             totalPages: resultado.totalPages,
-            currentPage: resultado.page,
+            page: resultado.page,
             hasPrevPage: resultado.hasPrevPage,
             hasNextPage: resultado.hasNextPage,
             prevPage: resultado.prevPage,
-            nextPage: resultado.nextPage
+            nextPage: resultado.nextPage,
+            query,
+            limit
         });
 
     }
@@ -44,7 +37,7 @@ Products.get('/', async (req, res) => {
 Products.get('/:id', async (req, res) => {
     try {
         const { id } = req.params
-        const producto = productos.find(u => u.id === id)
+        const producto = productModel.find(u => u.id === id)
 
         if (!producto) {
             res.status(404).json({ error: 'producto no encontrado' })

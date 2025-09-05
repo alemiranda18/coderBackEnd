@@ -1,5 +1,5 @@
 import { Router } from "express";
-import cartModel from "../../models/cartsModel";
+import cartModel from "../../models/cartsModel.js";
 
 const Carts = Router()
 
@@ -39,15 +39,15 @@ Carts.get('/', async (req, res) => {
 })
 
 //get para ver los carritos por Id
-Carts.get('/:id', async (req, res) => {
+Carts.get('/:cid', async (req, res) => {
     try {
-        const { id } = req.params
-        const carritoId = await cartModel.findById(id).populate('productos.productosId')
-        if (!carritoId) {
-            res.status(400).json({ message: 'producto no encontrado' })
+        const { cid } = req.params
+        const carrito = await cartModel.findById(cid).populate('productos.productsId')
+        if (!carrito) {
+            res.status(404).render('cart', { error: "Carrito no encontrado" });
         }
 
-        res.status(200).json(carritoId)
+        res.render('cart', { carrito })
     }
     catch (error) {
         res.status(500).json({ message: 'producto no encontrado', error })

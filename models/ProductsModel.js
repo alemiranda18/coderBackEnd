@@ -1,7 +1,6 @@
 import mongoose from "mongoose"
 import mongoosePaginate from "mongoose-paginate-v2";
 
-const productCollection = "productos"
 
 const ProductSchema = mongoose.Schema({
     id: Number,
@@ -15,6 +14,6 @@ const ProductSchema = mongoose.Schema({
 })
 ProductSchema.plugin(mongoosePaginate)
 
-const productModel = mongoose.model(productCollection, ProductSchema)
+const productModel = mongoose.model("productos", ProductSchema)
 
 export default productModel

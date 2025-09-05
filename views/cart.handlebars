@@ -1,4 +1,14 @@
-<h2>Productos Agregados</h2>
-<div></div>
+<h1>Productos en tu carrito</h1>
+{{#if carrito.productos.length}}
+<ul>
+    {{#each carrito.productos}}
+    <li>
+        <strong>{{this.productId.nombre}}</strong> - ${{this.productId.precio}} - Cantidad: {{this.cantidad}}
+    </li>
+    {{/each}}
+</ul>
+{{else}}
+<p>No hay productos en el carrito.</p>
+{{/if}}
 
 <script src="/cart.js" type="module"></script>

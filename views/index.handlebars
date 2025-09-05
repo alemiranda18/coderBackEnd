@@ -1,4 +1,22 @@
-<h2>Productos Agregados</h2>
-<div></div>
+<h1>Lista de Productos</h1>
+<ul>
+    {{#each products}}
+    <li>
+        <strong>{{this.nombre}}</strong> - ${{this.precio}} - Stock: {{this.cantidad}}
+        {{#if this.disponible}}<span>Disponible</span>{{else}}<span>No
+            disponible</span>{{/if}}
+        <button onclick="agregarAlCarrito('{{this._id}}')">Agregar al carrito</button>
+    </li>
+    {{/each}}
+</ul>
 
+<div>
+    {{#if hasPrevPage}}
+    <a href="/products?page={{prevPage}}&limit={{../limit}}{{#if ../query}}&query={{../query}}{{/if}}">Anterior</a>
+    {{/if}}
+    Página {{page}} de {{totalPages}}
+    {{#if hasNextPage}}
+    <a href="/products?page={{nextPage}}&limit={{../limit}}{{#if ../query}}&query={{../query}}{{/if}}">Siguiente</a>
+    {{/if}}
+</div>
 <script src="/products.js" type="module"></script>
